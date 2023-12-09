@@ -5,6 +5,7 @@ import { Character, Map } from "./index";
 
 export const Experience = () => {
   const [characters] = useAtom(charactersAtom);
+  console.log(characters);
   return (
     <>
       <Map />
@@ -14,11 +15,7 @@ export const Experience = () => {
           key={character.id}
           ide={character.id}
           value={character.value}
-          position={[
-            character.position[0],
-            character.position[1],
-            character.position[2],
-          ]}
+          position={[character.position[0], 3, character.position[2]]}
           angle={character.angle}
           hairColor={character.hairColor}
           topColor={character.topColor}

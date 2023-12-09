@@ -201,7 +201,6 @@ export function Character(props) {
         };
 
         rigidBody.current.applyImpulse(impulse, true);
-        // console.log(rigidBody);
       }
 
       //   ************************************************
@@ -210,11 +209,22 @@ export function Character(props) {
       rotateQuaterion.setFromAxisAngle(rotateAngle, Math.PI);
       scene.quaternion.rotateTowards(rotateQuaterion, 0.2);
     }
+
+    // if (jump) {
+    //   rigidBody.current.applyImpulse(
+    //     {
+    //       x: 0,
+    //       y: 10,
+    //       z: 0,
+    //     },
+    //     true
+    //   );
+    // }
   });
   return (
     <>
       <OrbitControls />
-      <CameraControls ref={controls} />
+      {myid === props.ide && <CameraControls ref={controls} />}
       {/* <PerspectiveCamera ref={controls} makeDefault /> */}
       <RigidBody
         colliders={false}

@@ -2,9 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { MoralisProvider } from "react-moralis";
 import { HuddleProvider, HuddleClient } from '@huddle01/react';
 const huddleClient = new HuddleClient({
-  projectId: process.env.REACT_APP_HUDDLE_PROJECT_ID,
+  projectId: "m8UgUsu4ZumPe9HbRRk2LSVCEzx6T1",
   options: {
     activeSpeakers: {
       size: 8,
@@ -13,10 +14,10 @@ const huddleClient = new HuddleClient({
 });
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <HuddleProvider client={huddleClient}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </HuddleProvider>
+  <MoralisProvider initializeOnMount={false}>
+    <HuddleProvider client={huddleClient}>
+        <App />
+    </HuddleProvider>
+  </MoralisProvider>
 );
 
