@@ -9,12 +9,13 @@ import { Experience } from "../GameComponents/Experience";
 import { checkAvatarFunc, createAvatarFunc } from "../utils/functionCall";
 import { useMoralis } from "react-moralis";
 import { Loader } from "../components";
+import { imgData } from "../utils/constants";
 
 const Game = () => {
   const [loader, setLoader] = useState(false);
   const [playerMenu, setPlayerMenu] = useState(false);
   const [isNewPlayer, setIsNewPlayer] = useState(false);
-  const { account } = useMoralis();
+  const [avatarSelector, setAvatarSelector] = useState("");
 
   useEffect(() => {
     const checkAvatar = async () => {
@@ -33,17 +34,23 @@ const Game = () => {
   }, []);
 
   const createAvatar = async () => {
-    setLoader(true);
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = await provider.getSigner();
-      await createAvatarFunc(signer);
-      setLoader(false);
-    } catch (error) {
-      console.log(error);
+    const cid = imgData.filter((item) => item.id == avatarSelector);
+
+    if (avatarSelector) {
+      setLoader(true);
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+        await createAvatarFunc(signer, cid);
+        setLoader(false);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
+
+  const handleSelect = (id) => {};
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       {/* <div
@@ -82,18 +89,24 @@ const Game = () => {
               Mint your own Arborg
             </h3>
             <div className="avatar-container make-flex flex-wrap gap-3 my-5">
-              <img src="#" className="min-w-[100px] min-h-[100px]" />
-              <img src="#" className="min-w-[100px] min-h-[100px]" />
-              <img src="#" className="min-w-[100px] min-h-[100px]" />
-              <img src="#" className="min-w-[100px] min-h-[100px]" />
-              <img
-                src="#"
-                className="min-w-[100px] min-h-[100px] border border-white"
-              />
-              <img src="#" className="min-w-[100px] min-h-[100px]" />
-              <img src="#" className="min-w-[100px] min-h-[100px]" />
-              <img src="#" className="min-w-[100px] min-h-[100px]" />
-              <img src="#" className="min-w-[100px] min-h-[100px]" />
+              {imgData.map(({ id, cid }) => {
+                return (
+                  <div
+                    key={id}
+                    onClick={() => setAvatarSelector(id)}
+                    className="w-[100px] h-[100px] rounded-md overflow-hidden"
+                    style={{
+                      border: id == avatarSelector ? "2px solid white" : "none",
+                    }}
+                  >
+                    <img
+                      src={`https://ipfs.io/ipfs/${cid}/p${id}.png`}
+                      className="h-[100%] cursor-pointer"
+                    />
+                  </div>
+                );
+              })}
+
               <div className="min-w-[100px] min-h-[100px] border-2 border-white rounded-lg text-white text-[3rem] make-flex">
                 +
               </div>

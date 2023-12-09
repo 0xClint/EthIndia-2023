@@ -14,66 +14,6 @@ import {
 const Header = () => {
   const [loader, setLoader] = useState(false);
 
-  const fetchUserMetaData = async () => {
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = await provider.getSigner();
-      await fetchUserMetadataFunc(signer);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const updateUserAvatarImage = async () => {
-    setLoader(true);
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = await provider.getSigner();
-      await updateUserAvatarImageFunc(signer);
-      setLoader(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const setUserInfo = async () => {
-    setLoader(true);
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = await provider.getSigner();
-      await setUserInfoFunc(signer);
-      setLoader(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const setUserFriends = async () => {
-    setLoader(true);
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = await provider.getSigner();
-      await setUserFriendsFunc(signer);
-      setLoader(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const checkAvatar = async () => {
-    setLoader(true);
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = await provider.getSigner();
-      await checkAvatarFunc(signer);
-      setLoader(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
     <div className="absolute z-10 top-0 w-screen flex flex-col">
       <div className="w-full flex text-[2rem] justify-between items-center h-16 px-5 ">
@@ -90,36 +30,6 @@ const Header = () => {
           >
             Save
           </button>
-          <button
-            className="btn w-[80px] bg-[#5295c9f4] hover:scale-[102%]"
-            onClick={() => checkAvatar()}
-          >
-            Check
-          </button>
-          {/* <button
-            className="btn w-[80px] bg-[#5295c9f4] hover:scale-[102%]"
-            onClick={() => fetchUserMetaData()}
-          >
-            Fetch
-          </button>
-          <button
-            className="btn w-[80px] bg-[#5295c9f4] hover:scale-[102%]"
-            onClick={() => updateUserAvatarImage()}
-          >
-            Update
-          </button>
-          <button
-            className="btn w-[80px] bg-[#5295c9f4] hover:scale-[102%]"
-            onClick={() => setUserInfo()}
-          >
-            Set User info
-          </button>
-          <button
-            className="btn w-[80px] bg-[#5295c9f4] hover:scale-[102%]"
-            onClick={() => setUserFriends()}
-          >
-            Set User Friends
-          </button> */}
           <ConnectWallet />
         </div>
       </div>
@@ -129,3 +39,51 @@ const Header = () => {
 };
 
 export default Header;
+
+// const fetchUserMetaData = async () => {
+//   try {
+//     const provider = new ethers.providers.Web3Provider(window.ethereum);
+//     await provider.send("eth_requestAccounts", []);
+//     const signer = await provider.getSigner();
+//     await fetchUserMetadataFunc(signer);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+// const updateUserAvatarImage = async () => {
+//   setLoader(true);
+//   try {
+//     const provider = new ethers.providers.Web3Provider(window.ethereum);
+//     await provider.send("eth_requestAccounts", []);
+//     const signer = await provider.getSigner();
+//     await updateUserAvatarImageFunc(signer);
+//     setLoader(false);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+// const setUserInfo = async () => {
+//   setLoader(true);
+//   try {
+//     const provider = new ethers.providers.Web3Provider(window.ethereum);
+//     await provider.send("eth_requestAccounts", []);
+//     const signer = await provider.getSigner();
+//     await setUserInfoFunc(signer);
+//     setLoader(false);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+// const setUserFriends = async () => {
+//   setLoader(true);
+//   try {
+//     const provider = new ethers.providers.Web3Provider(window.ethereum);
+//     await provider.send("eth_requestAccounts", []);
+//     const signer = await provider.getSigner();
+//     await setUserFriendsFunc(signer);
+//     setLoader(false);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };

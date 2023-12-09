@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 
 // ******************WORLD NFT Function call****************************
 
-export const createAvatarFunc = async (signer) => {
+export const createAvatarFunc = async (signer, cid) => {
   const account = await signer.getAddress();
   const contract = new ethers.Contract(
     AVATAR_NFT_CONTRACT_ADDRESS,
@@ -18,7 +18,7 @@ export const createAvatarFunc = async (signer) => {
       },
     }
   }
-  const tx = await contract.createAvatar(account, "CID", "description", JSON.stringify(artibute));
+  const tx = await contract.createAvatar(account, cid, "description", JSON.stringify(artibute));
   await tx.wait();
   console.log(tx)
 };
