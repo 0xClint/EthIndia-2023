@@ -7,7 +7,7 @@ import { useAtom } from "jotai";
 import { SocketManager, idAtom, mycharactersAtom, socket } from "../GameComponents/SocketManager";
 import { Experience } from "../GameComponents/Experience";
 import { charactersAtom } from "../GameComponents/SocketManager";
-import { useRoom, useLocalVideo, usePeerIds, useLocalAudio } from '@huddle01/react/hooks';
+import { useRoom, useLocalVideo, usePeerIds, useLocalAudio, useDataMessage } from '@huddle01/react/hooks';
 import axios from "axios"
 import { useEffect, useRef } from 'react';
 import { AccessToken, Role } from '@huddle01/server-sdk/auth';
@@ -16,6 +16,10 @@ import { ethers } from "ethers";
 import { checkAvatarFunc, createAvatarFunc } from "../utils/functionCall";
 import { useMoralis } from "react-moralis";
 import { Loader } from "../components";
+import { useAspect, useVideoTexture, useTexture } from '@react-three/drei'
+import url from "../assets/video.mp4";
+import fallbackURL from "../assets/bg.jpg";
+
 
 const Game = () => {
   const [loader, setLoader] = useState(false);
@@ -100,6 +104,16 @@ const Game = () => {
 
   const { enableVideo, isVideoOn, stream, disableVideo } = useLocalVideo();
   const { enableAudio, isAudioOn, stream: audioStream } = useLocalAudio();
+  const { sendData } = useDataMessage({
+    onMessage: (payload, from, label) => {
+      console.log("Received a message!");
+      console.log("Message: ", payload);
+      console.log("Sender: ", from);
+      if (label) console.log("Label: ", label);
+      // your code here
+    }
+  });
+  
   const videoRef = useRef(null);
   useEffect(() => {
     if (stream && videoRef.current) {
@@ -142,6 +156,16 @@ const Game = () => {
       console.log(error);
     }
   };
+
+  function VideoMaterial({ url }) {
+    const texture = useVideoTexture(url)
+    return <meshBasicMaterial map={texture} toneMapped={false} />
+  }
+
+  function FallbackMaterial({ url }) {
+    const texture = useTexture(url)
+    return <meshBasicMaterial map={texture} toneMapped={false} />
+  }
   return (
 
     <div style={{ width: "100vw", height: "100vh" }}>
@@ -268,6 +292,18 @@ const Game = () => {
       </div>
 
       <Canvas shadows camera={{ position: [0, 6, 14], fov: 42 }}>
+        <mesh position={[12, 50, -75]} rotation={[0, 0, 0]}>
+          <planeGeometry args={[20, 20]} />
+          <Suspense fallback={<FallbackMaterial url={fallbackURL} />}>
+            <VideoMaterial url={url} />
+          </Suspense>
+        </mesh>
+        <mesh position={[30, 2.8, -85]} rotation={[0, 1.6, 0]}>
+          <planeGeometry args={[15, 5]} />
+          <Suspense fallback={<FallbackMaterial url={fallbackURL} />}>
+            <VideoMaterial url={url} />
+          </Suspense>
+        </mesh>
         <OrbitControls />
         <axesHelper />
         <gridHelper />
@@ -282,10 +318,11 @@ const Game = () => {
             attach="shadow-camera"
             args={[-20, 20, 20, -20]}
           />
+          {/* debug gravity={[0, -50, 0]} */}
         </directionalLight>
         <ambientLight intensity={0.2} />
         <Suspense>
-          <Physics debug gravity={[0, -50, 0]}>
+          <Physics >
             <Experience />
           </Physics>
         </Suspense>

@@ -130,11 +130,16 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("user disconnected");
 
-    characters.splice(
-      characters.findIndex((character) => character.id === socket.id),
-      1
-    );
-    io.emit("characters", characters);
+    const index = characters.findIndex((character) => character.id === socket.id);
+
+    if (index !== -1) {
+      characters.splice(index, 1);
+      // Check if characters array is empty after removing the element
+      if (characters.length === 0) {
+        roomId = "#";
+      }
+      io.emit("characters", characters);
+    }
   });
 });
 
