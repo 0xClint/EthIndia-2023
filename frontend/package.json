@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@huddle01/react": "^1.0.0-alpha.58",
+    "@huddle01/server-sdk": "^1.0.0-alpha.25",
     "@react-three/cannon": "^6.6.0",
     "@react-three/drei": "9.75.0",
     "@react-three/fiber": "^8.15.12",
@@ -13,6 +15,7 @@
     "@types/three": "0.152.1",
     "@waku/react": "^0.0.5-63a782d",
     "@waku/sdk": "^0.0.21",
+    "axios": "^1.6.2",
     "ethers": "5.7.2",
     "gltfjsx": "^6.2.15",
     "jotai": "^2.6.0",

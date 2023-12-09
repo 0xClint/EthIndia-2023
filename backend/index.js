@@ -38,25 +38,49 @@ const generateRandomHexColor = () => {
   return "#" + Math.floor(Math.random() * 16777215).toString(16);
 };
 
+let roomId = "#";
+
 io.on("connection", (socket) => {
   console.log("user connected");
+  if (roomId === "#") {
+    characters.push({
+      value: {
+        moveForward: false,
+        moveBackward: false,
+        moveRight: false,
+        moveLeft: false,
+        jump: false,
+        shift: false,
+      },
+      id: socket.id,
+      roomId: "#",
+      angle: 0,
+      position: generateRandomPosition(),
+      hairColor: generateRandomHexColor(),
+      topColor: generateRandomHexColor(),
+      bottomColor: generateRandomHexColor(),
+    });
+  } else {
+    characters.push({
+      value: {
+        moveForward: false,
+        moveBackward: false,
+        moveRight: false,
+        moveLeft: false,
+        jump: false,
+        shift: false,
+      },
+      id: socket.id,
+      roomId: roomId,
+      angle: 0,
+      position: generateRandomPosition(),
+      hairColor: generateRandomHexColor(),
+      topColor: generateRandomHexColor(),
+      bottomColor: generateRandomHexColor(),
+    });
 
-  characters.push({
-    value: {
-      moveForward: false,
-      moveBackward: false,
-      moveRight: false,
-      moveLeft: false,
-      jump: false,
-      shift: false,
-    },
-    id: socket.id,
-    angle: 0,
-    position: generateRandomPosition(),
-    hairColor: generateRandomHexColor(),
-    topColor: generateRandomHexColor(),
-    bottomColor: generateRandomHexColor(),
-  });
+  }
+
 
   socket.emit("hello");
 
@@ -70,6 +94,36 @@ io.on("connection", (socket) => {
     );
     //character.angle = angle;
     character.value = value;
+    io.emit("characters", characters);
+  });
+
+  //{ roomId }
+  socket.on("setroomId", (value) => {
+    console.log("Room ID Emit", value)
+    console.log("Room ID Emited By ", socket.id)
+    const character = characters.map(
+      (character) => {
+        character.roomId = value.roomId
+      },
+    );
+    console.log(character)
+    roomId = value.roomId
+    console.log("roomId", roomId)
+    io.emit("characters", characters);
+  })
+  //{ peerId , roomId}
+  socket.on("roomId", (value) => {
+    console.log("Room ID Emit", value)
+    console.log("Room ID Emited By", socket.id)
+    const character = characters.find(
+      (character) => character.id === socket.id,
+    );
+    const peer = characters.find(
+      (character) => character.id === value.peerId,
+    );
+    character.roomId = value.roomId;
+    peer.roomId = value.roomId;
+    console.log(character, peer)
     io.emit("characters", characters);
   });
 

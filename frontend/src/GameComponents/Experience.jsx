@@ -10,7 +10,6 @@ export const Experience = () => {
     <>
       <Map />
       <OrbitControls />
-
       {characters.map((character) => (
         <Character
           key={character.id}
