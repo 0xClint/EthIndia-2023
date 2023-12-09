@@ -12,12 +12,51 @@ import { Bullet } from "./Bullet";
 import { BulletHit } from "./BulletHit";
 import { CharacterController } from "./CharacterController";
 import { Map } from "./Map";
+import protobuf from "protobufjs";
+import {
+  useWaku,
+  useContentPair,
+  useLightPush,
+  useStoreMessages,
+  useFilterMessages,
+  ContentPairProvider,
+} from "@waku/react";
 
-export const Experience = ({ downgradedPerformance = false }) => {
+export const Experience = ({ downgradedPerformance = false, roomId }) => {
   const [players, setPlayers] = useState([]);
+  const [messageData, setMessageData] = useState([]);
+
+  // ********************Waku Hooks ***********************************
+
+  const { node, isLoading } = useWaku();
+
+  const { decoder, encoder } = useContentPair();
+
+  // Query Store peers for past messages
+  const { messages: storeMessages } = useStoreMessages({ node, decoder });
+
+  // Receive messages from Filter subscription
+  const { messages: filterMessages } = useFilterMessages({ node, decoder });
+
+  // Send the message using Light Push
+  const { push } = useLightPush({ node, encoder });
+
+  // Create a message structure
+  const ChatMessage = new protobuf.Type("ChatMessage")
+    .add(new protobuf.Field("timestamp", 1, "uint64"))
+    .add(new protobuf.Field("message", 2, "string"));
+
+  // *******************************************************
+
+  useEffect(() => {
+    console.log("node : ", node);
+    console.log("isLoading : ", isLoading);
+  }, [node, isLoading]);
+
   const start = async () => {
     // Start the game
-    await insertCoin();
+    console.log("roomID : " + roomId);
+    await insertCoin({ roomCode: roomId });
 
     // Create a joystick controller for each joining player
     onPlayerJoin((state) => {
@@ -74,8 +113,56 @@ export const Experience = ({ downgradedPerformance = false }) => {
 
   const onKilled = (_victim, killer) => {
     const killerState = players.find((p) => p.state.id === killer).state;
+
     killerState.setState("kills", killerState.state.kills + 1);
+
+    if (myPlayer()?.id == killer) {
+      sendMessage();
+    }
   };
+
+  // ********************************Waku Integration************
+
+  const sendMessage = async () => {
+    const tempMassage = ChatMessage.create({
+      timestamp: Date.now(),
+      sender: "sender",
+      message: "message",
+    });
+    const serialisedMessage = ChatMessage.encode(tempMassage).finish();
+    const timestamp = new Date();
+
+    const { recipients, errors } = await push({
+      payload: serialisedMessage,
+      timestamp,
+    });
+
+    console.log("receipient : " + recipients);
+    // Check for errors
+    if (errors.length == 0) {
+      console.log("MESSAGE PUSHED");
+      console.log("receipient : " + recipients);
+    } else {
+      console.log("error : " + errors);
+    }
+  };
+
+  // ************************Retrieve messages using store
+
+  // Render both past and new messages
+  useEffect(() => {
+    console.log("hello");
+    const dataArray = [];
+    const allMessages = storeMessages.concat(filterMessages);
+    allMessages.map((receviedMessage) => {
+      const { timestamp, message } = ChatMessage.decode(
+        receviedMessage.payload
+      );
+      dataArray.push({ timestamp, message });
+    });
+    console.log(dataArray);
+    setMessageData(dataArray);
+  }, [filterMessages, storeMessages]);
 
   return (
     <>
