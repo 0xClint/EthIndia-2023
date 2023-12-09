@@ -1,7 +1,7 @@
-// import Tree from "./Tree";
+import { Character } from "./Character";
+import { Map } from "./Map";
+import { SocketManager } from "./SocketManager";
 
-
-
-// export {
-// Tree, Ground, Player
-// }
+export {
+    Character, Map, SocketManager
+}

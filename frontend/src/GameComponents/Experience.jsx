@@ -1,18 +1,15 @@
-import { ContactShadows, OrbitControls, useCursor } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { useAtom } from "jotai";
-import { useState } from "react";
 import { charactersAtom } from "./SocketManager";
-import { Map } from "./Map";
-import { Character } from "./Character";
+import { Character, Map } from "./index";
+
 export const Experience = () => {
   const [characters] = useAtom(charactersAtom);
-  const [onFloor, setOnFloor] = useState(false);
-  useCursor(onFloor);
   return (
     <>
       <Map />
-      <ContactShadows blur={2} />
       <OrbitControls />
+
       {characters.map((character) => (
         <Character
           key={character.id}

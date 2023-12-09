@@ -10,7 +10,6 @@ import { Experience } from './GameComponents/Experience';
 
 function App() {
 
-
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <SocketManager />
@@ -25,7 +24,7 @@ function App() {
         </directionalLight>
         <ambientLight intensity={0.2} />
         <Suspense>
-          <Physics  >
+          <Physics debug>
             <Experience />
           </Physics>
         </Suspense>
