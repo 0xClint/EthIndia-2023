@@ -40,7 +40,6 @@ const generateRandomHexColor = () => {
 
 io.on("connection", (socket) => {
   console.log("user connected");
-
   characters.push({
     value: {
       moveForward: false,
@@ -70,6 +69,31 @@ io.on("connection", (socket) => {
     );
     //character.angle = angle;
     character.value = value;
+    io.emit("characters", characters);
+  });
+  
+  //{ roomId }
+  socket.on("setroomId", (value) => {
+    console.log("Room ID Emit", value)
+    console.log("Room ID Emited By", socket.id)
+    const character = characters.find(
+      (character) => character.id === socket.id,
+    );
+    character.roomId = value.roomId;
+    io.emit("characters", characters);
+  })
+  //{ peerId , roomId}
+  socket.on("roomId", (value) => {
+    console.log("Room ID Emit", value)
+    console.log("Room ID Emited By", socket.id)
+    const character = characters.find(
+      (character) => character.id === socket.id,
+    );
+    const peer = characters.find(
+      (character) => character.id === value.peerId,
+    );
+    character.roomId = value.roomId;
+    peer.roomId = value.roomId;
     io.emit("characters", characters);
   });
 

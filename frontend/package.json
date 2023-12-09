@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@huddle01/react": "^1.0.0-alpha.58",
+    "@huddle01/server-sdk": "^1.0.0-alpha.25",
     "@react-three/cannon": "^6.6.0",
     "@react-three/drei": "9.75.0",
     "@react-three/fiber": "^8.15.12",

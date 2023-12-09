@@ -155,7 +155,7 @@ export function Character(props) {
         playerWorldPos.y + 1.5,
         playerWorldPos.z,
         true
-      );
+      );  
       //   controls.current.setLookAt(
       //     playerWorldPos.x + 5,
       //     playerWorldPos.y + 4,

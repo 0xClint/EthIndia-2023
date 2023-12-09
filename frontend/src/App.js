@@ -6,8 +6,6 @@ import { Physics } from '@react-three/rapier';
 import { SocketManager } from './GameComponents/SocketManager';
 import { Experience } from './GameComponents/Experience';
 
-
-
 function App() {
 
   return (
@@ -24,7 +22,7 @@ function App() {
         </directionalLight>
         <ambientLight intensity={0.2} />
         <Suspense>
-          <Physics debug>
+          <Physics>
             <Experience />
           </Physics>
         </Suspense>
