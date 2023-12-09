@@ -11,16 +11,16 @@ const ConnectWallet = () => {
     isWeb3EnableLoading,
   } = useMoralis();
 
-  // useEffect(() => {
-  //   if (isWeb3Enabled) return;
+  useEffect(() => {
+    if (isWeb3Enabled) return;
 
-  //   if (
-  //     typeof window !== "undefined" &&
-  //     window.localStorage.getItem("connected")
-  //   ) {
-  //     enableWeb3();
-  //   }
-  // }, []);
+    if (
+      typeof window !== "undefined" &&
+      window.localStorage.getItem("connected")
+    ) {
+      enableWeb3();
+    }
+  }, [account]);
 
   useEffect(() => {
     // Moralis

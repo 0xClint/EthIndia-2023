@@ -12,13 +12,18 @@ import axios from "axios"
 import { useEffect, useRef } from 'react';
 import { AccessToken, Role } from '@huddle01/server-sdk/auth';
 import RemotePeer from "./RemotePeer";
+import { ethers } from "ethers";
+import { checkAvatarFunc, createAvatarFunc } from "../utils/functionCall";
+import { useMoralis } from "react-moralis";
+import { Loader } from "../components";
 
 const Game = () => {
+  const [loader, setLoader] = useState(false);
   const [playerMenu, setPlayerMenu] = useState(false);
   const [characters] = useAtom(charactersAtom);
-  const [char , mychare]  = useState(characters)
+  const [char, mychare] = useState(characters)
   const [mycharacter] = useAtom(mycharactersAtom)
-  const [mychar , setmyChar] = useState(mycharacter)
+  const [mychar, setmyChar] = useState(mycharacter)
   const [token, setToken] = useState(null);
   const crateToken = async () => {
     const accessToken = new AccessToken({
@@ -106,77 +111,142 @@ const Game = () => {
   console.log({ peerIds })
   console.log("inpeer", inpeer)
   const [myid] = useAtom(idAtom);
+  const [isNewPlayer, setIsNewPlayer] = useState(false);
+  const { account } = useMoralis();
 
+  useEffect(() => {
+    const checkAvatar = async () => {
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+        setIsNewPlayer(!(await checkAvatarFunc(signer)));
+        setLoader(false);
+      } catch (error) {
+        console.log(error);
+        setLoader(false);
+      }
+    };
+    checkAvatar();
+  }, []);
+
+  const createAvatar = async () => {
+    setLoader(true);
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+      await createAvatarFunc(signer);
+      setLoader(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
 
     <div style={{ width: "100vw", height: "100vh" }}>
       <SocketManager />
-      <div
-        className="absolute  cursor-pointer z-10 left-1 icon-container gap-2"
-        style={{ width: "280px", height: "10px" }}
-      >
-        {peerIds.map((peerId) => (<RemotePeer key={peerId} peerId={peerId} />)
-        )}
-        {isVideoOn && (
-          <div className="w-[80%] h-[135px] rounded-lg bg-black py-5 my-2">
-            <video
-              ref={videoRef}
-              style={{ width: "100%", height: "100%" }}
-              autoPlay
-            ></video>
-          </div>
-        )}
-      </div>
-      <div
-        className="absolute bottom-[75px] cursor-pointer z-10 left-1 p-1 small-card-container gap-2"
-        style={{ width: "200px", height: "160px" }}
-      >
-        {/* <p className="hover:bg-[#ffffff] rounded-md px-3 font-bold">Public</p> */}
-        <div className="h-[100px] overflow-y-scroll">
-          <>
-            {char?.map((character) => (
-              // Check if character.id exists
-              character.id != myid ? (
-                // If character.id exists, render myid
-                <div className="flex flex-row justify-between pr-3" key={character.id}>
-                  <p className="hover:bg-[#ffffff] rounded-md px-3">{character.bottomColor}</p>
-                  <div className=""> Online</div>
-                </div>
-              ) : (
-                null
-              )
-            ))}
-          </>
-
-        </div>
-
-
-        <div className="w-full make-flex">
-          {mycharacter.roomId === "#" ? (
-            <button
-              key={mycharacter.roomId} // Adding a unique key prop
-              onClick={async () => await createRoom()}
-              className="btn w-[90%] mx-auto my-1 mt-2 hover:scale-[102%]"
-              style={{ padding: "5px" }}
-            >
-              Create
-            </button>
-          ) : (
-            <button
-              key={mycharacter.roomId} // Adding a unique key prop
-              onClick={async () => await joinRoom({
-                roomId: mycharacter.roomId, // Use mycharacter.roomId instead of character.roomId
-                token: token
-              })}
-              className="btn w-[90%] mx-auto my-1 mt-2 hover:scale-[102%]"
-              style={{ padding: "5px" }}
-            >
-              Join
-            </button>
+      <div>
+        <div
+          className="absolute  cursor-pointer z-10 left-1 icon-container gap-2"
+          style={{ width: "280px", height: "10px" }}
+        >
+          {peerIds.map((peerId) => (<RemotePeer key={peerId} peerId={peerId} />)
+          )}
+          {isVideoOn && (
+            <div className="w-[80%] h-[135px] rounded-lg bg-black py-5 my-2">
+              <video
+                ref={videoRef}
+                style={{ width: "100%", height: "100%" }}
+                autoPlay
+              ></video>
+            </div>
           )}
         </div>
+        <div
+          className="absolute bottom-[75px] cursor-pointer z-10 left-1 p-1 small-card-container gap-2"
+          style={{ width: "200px", height: "160px" }}
+        >
+          <div className="h-[100px] overflow-y-scroll">
+            <>
+              {characters?.map((character) => (
+                // Check if character.id exists
+                character.id != myid ? (
+                  // If character.id exists, render myid
+                  <div className="flex flex-row justify-between pr-3" key={character.id}>
+                    <p className="hover:bg-[#ffffff] rounded-md px-3">{character.bottomColor}</p>
+                    <div className=""> Online</div>
+                  </div>
+                ) : (
+                  null
+                )
+              ))}
+            </>
 
+          </div>
+
+
+          <div className="w-full make-flex">
+            {mycharacter.roomId === "#" ? (
+              <button
+                key={mycharacter.roomId} // Adding a unique key prop
+                onClick={async () => await createRoom()}
+                className="btn w-[90%] mx-auto my-1 mt-2 hover:scale-[102%]"
+                style={{ padding: "5px" }}
+              >
+                Create
+              </button>
+            ) : (
+              <button
+                key={mycharacter.roomId} // Adding a unique key prop
+                onClick={async () => await joinRoom({
+                  roomId: mycharacter.roomId, // Use mycharacter.roomId instead of character.roomId
+                  token: token
+                })}
+                className="btn w-[90%] mx-auto my-1 mt-2 hover:scale-[102%]"
+                style={{ padding: "5px" }}
+              >
+                Join
+              </button>
+            )}
+          </div>
+
+        </div>
       </div>
+      {isNewPlayer && (
+        <div className="absolute w-[100vw] z-10 h-[100vh] make-flex">
+          <div className="w-[600px] h-[400px] py-5 card-container">
+            <h3 className="text-center font-medium text-[2rem]">
+              Mint your own Arborg
+            </h3>
+            <div className="avatar-container make-flex flex-wrap gap-3 my-5">
+              <img src="#" className="min-w-[100px] min-h-[100px]" />
+              <img src="#" className="min-w-[100px] min-h-[100px]" />
+              <img src="#" className="min-w-[100px] min-h-[100px]" />
+              <img src="#" className="min-w-[100px] min-h-[100px]" />
+              <img
+                src="#"
+                className="min-w-[100px] min-h-[100px] border border-white"
+              />
+              <img src="#" className="min-w-[100px] min-h-[100px]" />
+              <img src="#" className="min-w-[100px] min-h-[100px]" />
+              <img src="#" className="min-w-[100px] min-h-[100px]" />
+              <img src="#" className="min-w-[100px] min-h-[100px]" />
+              <div className="min-w-[100px] min-h-[100px] border-2 border-white rounded-lg text-white text-[3rem] make-flex">
+                +
+              </div>
+            </div>
+            <div className="make-flex">
+              <button
+                className="btn w-60 text-[1.5rem]"
+                onClick={() => createAvatar()}
+              >
+                Mint
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="absolute bottom-2 cursor-pointer z-10 left-2 icon-container">
         <img
           src={"#"}
@@ -220,6 +290,7 @@ const Game = () => {
           </Physics>
         </Suspense>
       </Canvas>
+      {loader && <Loader />}
     </div>
   );
 };
