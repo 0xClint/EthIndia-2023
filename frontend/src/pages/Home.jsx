@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { Header } from "../components";
-import { bgImg } from "../assets";
+import {
+  arverseIcon,
+  arzoneIcon,
+  bgImg,
+  gearIcon,
+  map1Icon,
+  map2Icon,
+} from "../assets";
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -21,44 +28,44 @@ const Home = () => {
                 className="make-flex  flex-col card-container gap-6 w-[280px] h-[280px] hover:scale-[103%] text-base cursor-pointer"
               >
                 <div className="w-[200px] h-[170px] overflow-hidden rounded-lg">
-                  <img src={bgImg} className="h-[100%] " />
+                  <img src={map1Icon} className="h-[100%] " />
                 </div>
-                <h2 className="text-[1.3rem]">Map1</h2>
+                <h2 className="text-[1.3rem]">MicroArzone</h2>
               </Link>
               <div className="make-flex  flex-col card-container gap-6 w-[280px] h-[280px] hover:scale-[103%] text-base cursor-pointer">
                 <div className="w-[200px] h-[170px] overflow-hidden rounded-lg">
-                  <img src={bgImg} className="h-[100%] " />
+                  <img src={map2Icon} className="h-[100%] " />
                 </div>
-                <h2 className="text-[1.3rem]">Map2</h2>
+                <h2 className="text-[1.3rem]">MacroArzone</h2>
               </div>
             </div>
           </div>
         ) : (
           <div className="make-flex justify-start pt-28 w-screen h-screen flex-col">
-            <h1 className="text-[3rem] font-bold">Arcave</h1>
+            <h1 className="text-[3rem] font-bold text-white">Arcave</h1>
             <div className="w-screen mx-auto h-[300px] make-flex gap-14">
               <button
                 onClick={() => setMapMenu(true)}
                 className="make-flex  flex-col card-container gap-6 w-[280px] h-[280px] hover:scale-[103%] text-base"
               >
                 <div className="w-[200px] h-[170px] overflow-hidden rounded-lg">
-                  <img src={bgImg} className="h-[100%] " />
+                  <img src={arverseIcon} className="h-[100%] " />
                 </div>
-                <h2 className="text-[1.3rem]">Arverse</h2>
+                <h2 className="text-[1.3rem] font-bold text-white">Arverse</h2>
               </button>
               <a
                 href="#"
                 className="make-flex  flex-col card-container gap-6 w-[280px] h-[280px] hover:scale-[103%] text-base"
               >
-                <div className="w-[200px] h-[170px] overflow-hidden rounded-lg">
-                  <img src={bgImg} className="h-[100%] " />
+                <div className="w-[200px] h-[170px] overflow-hidden rounded-lg make-flex shadow-lg">
+                  <img src={arzoneIcon} className="h-[100%] scale-105" />
                 </div>
-                <h2 className="text-[1.3rem]">Arzone</h2>
+                <h2 className="text-[1.3rem] font-bold text-white">Arzone</h2>
               </a>
 
               <div className="make-flex  flex-col card-container gap-6 w-[280px] h-[280px] hover:scale-[103%] text-base">
-                <div className="w-[200px] h-[170px] overflow-hidden rounded-lg">
-                  <img src={bgImg} className="h-[100%] " />
+                <div className="w-[200px] h-[170px] overflow-hidden rounded-lg make-flex">
+                  <img src={gearIcon} className="w-[100%] " />
                 </div>
                 <h2 className="text-[1.3rem]">Setting</h2>
               </div>

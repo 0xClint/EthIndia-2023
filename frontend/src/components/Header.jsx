@@ -18,7 +18,7 @@ const Header = () => {
     <div className="absolute z-10 top-0 w-screen flex flex-col">
       <div className="w-full flex text-[2rem] justify-between items-center h-16 px-5 ">
         <div className="flex gap-4 items-center">
-          <div className="leading-7 m-0 p-0">
+          <div className="leading-7 m-0 p-0 font-bold text-white">
             {/* <img src={blockCraftName} className="h-8  " /> */}ARCAVE
           </div>
         </div>

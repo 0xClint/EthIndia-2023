@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useMoralis } from "react-moralis";
+import { FaUserLarge } from "react-icons/fa6";
 
 const ConnectWallet = () => {
   const {
@@ -37,8 +38,8 @@ const ConnectWallet = () => {
     <div className="flex justify-center items-center">
       {account ? (
         <div className="btn flex items-center gap-2">
-          {/* <img src={profileIcon} className="w-6" /> */}
-          profileicon
+          <FaUserLarge />
+
           {`${account.slice(0, 4)}..${account.slice(account.length - 4)}`}
         </div>
       ) : (
