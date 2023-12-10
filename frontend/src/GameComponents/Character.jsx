@@ -224,7 +224,7 @@ export function Character(props) {
   });
   return (
     <>
-      <OrbitControls />
+      {/* <OrbitControls /> */}
       {myid === props.ide && <CameraControls ref={controls} />}
       {/* <PerspectiveCamera ref={controls} makeDefault /> */}
       <RigidBody
