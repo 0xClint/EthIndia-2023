@@ -1,4 +1,4 @@
-import { useRemoteVideo, useRemoteAudio } from '@huddle01/react/hooks';
+import { useRemoteVideo, useRemoteAudio, usePeerIds } from '@huddle01/react/hooks';
 import React, { useEffect, useRef } from 'react';
 
 const RemotePeer = (props) => {
@@ -7,8 +7,7 @@ const RemotePeer = (props) => {
     const { stream: audioStream } = useRemoteAudio({ peerId: props.peerId });
     const vidRef = useRef(null);
     const audioRef = useRef(null);
-
-
+   
     useEffect(() => {
         if (stream && vidRef.current && state === "playable") {
             vidRef.current.srcObject = stream;

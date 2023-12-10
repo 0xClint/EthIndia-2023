@@ -9,16 +9,21 @@ import {
   useFilterMessages,
 } from "@waku/react";
 import Lottie from "react-lottie-player";
+import { useDataMessage, useLocalPeer, usePeerIds } from '@huddle01/react/hooks';
 
 const ChatBox = () => {
   const { account } = useMoralis();
   const [loader, setLoader] = useState(false);
   const [xmtp, setxmtp] = useState(true);
-  const [message, setMessage] = useState([]);
-
+  const [message, setMessage] = useState("");
+  const [activemessage , setactivemessages] = useState([]);
   // Create and start a Light Node
   const { node, isLoading } = useWaku();
-
+  const peerIds = usePeerIds()
+  const {
+    peerId
+  } = useLocalPeer();
+  console.log("localPear", peerId)
   useEffect(() => {
     // console.log("isLoading : ", isLoading);
     console.log("node : ", node);
@@ -64,21 +69,17 @@ const ChatBox = () => {
     }
   };
 
-  // ************************Retrieve messages using store
 
-  // Render both past and new messages
-  useEffect(() => {
-    const dataArray = [];
-    const allMessages = storeMessages.concat(filterMessages);
-    allMessages.map((receviedMessage) => {
-      const { timestamp, message } = ChatMessage.decode(
-        receviedMessage.payload
-      );
-      dataArray.push({ timestamp, message });
-    });
-    console.log(dataArray);
-    setMessage(dataArray);
-  }, [filterMessages, storeMessages]);
+  const { sendData } = useDataMessage({
+    onMessage: (payload, from, label) => {
+      console.log("Received a message!");
+      console.log("Message: ", payload);
+      console.log("Sender: ", from);
+      if (label) console.log("Label: ", label);
+      setactivemessages([...activemessage , payload]);
+      // your code here
+    }
+  });
 
   return (
     <div className="absolute downMenu flex justify-end right-14 bottom-0 z-10 text-black">
@@ -102,8 +103,8 @@ const ChatBox = () => {
         <div className="chat-container bg-white w-[500px] h-[90vh] flex rounded-lg ">
           <div className="chatContent flex flex-col justify-end w-full  text-2xl">
             <div className="chats flex flex-col m-2 text-white gap-2 font-vt overflow-y-scroll h-full">
-              {/* {activeChat
-                ? activeChat.map((item) => {
+              {activemessage
+                ? activemessage.map((item) => {
                     return (
                       <div
                         className="flex"
@@ -114,15 +115,15 @@ const ChatBox = () => {
                               : "start"
                           }`,
                         }}
-                        key={item.id}
+                        key={item}
                       >
                         <div className="bg-[#5A5A8E] inline-block px-3 rounded-md">
-                          {item.content}
+                          {item}
                         </div>
                       </div>
                     );
                   })
-                : ""} */}
+                : ""}
             </div>
             <div className="inputContainer flex mb-2 h-10">
               <input
@@ -132,10 +133,18 @@ const ChatBox = () => {
                 onChange={(e) => setMessage(e.target.value)}
               />
               <button
-                onClick={() => sendMessage()}
+                // onClick={async () =>  sendData({ to: "*" , payload : "JSON.stringify(message)" , label : "Ankit" })}
+                onClick={() => {
+                  console.log("sending data")
+                  sendData({
+                    payload: message,
+                    to: "*",
+                    label: "chat"
+                  })
+                }}
                 className="btn bg-[#589fd6] text-white mx-1 hover:bg-[#4299db]"
               >
-                send
+                Send
               </button>
             </div>
           </div>

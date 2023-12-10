@@ -12,15 +12,11 @@ import {
 } from "../GameComponents/SocketManager";
 import { Experience } from "../GameComponents/Experience";
 import { charactersAtom } from "../GameComponents/SocketManager";
-import {
-  useRoom,
-  useLocalVideo,
-  usePeerIds,
-  useLocalAudio,
-} from "@huddle01/react/hooks";
-import axios from "axios";
-import { useEffect, useRef } from "react";
-import { AccessToken, Role } from "@huddle01/server-sdk/auth";
+import { useRoom, useLocalVideo, usePeerIds, useLocalPeer, useLocalScreenShare, useLocalAudio, useDataMessage } from '@huddle01/react/hooks';
+import axios from "axios"
+import { useEffect, useRef } from 'react';
+import { AccessToken, Role } from '@huddle01/server-sdk/auth';
+
 import RemotePeer from "./RemotePeer";
 import { ethers } from "ethers";
 import { checkAvatarFunc, createAvatarFunc } from "../utils/functionCall";
@@ -65,8 +61,8 @@ const Game = () => {
       },
     });
 
-    console.log("accessToken", accessToken);
     const token = await accessToken.toJwt();
+    console.log("accessToken", token);
     setToken(token);
   };
 
@@ -101,7 +97,7 @@ const Game = () => {
     }
   };
 
-  const { joinRoom } = useRoom({
+  const { joinRoom, } = useRoom({
     onJoin: async (room) => {
       console.log("Joined the room", room);
       await enableVideo();
@@ -110,10 +106,41 @@ const Game = () => {
     onPeerJoin: (peer) => {
       console.log("onPeerJoin", peer);
     },
+
+
+
   });
 
   const { enableVideo, isVideoOn, stream, disableVideo } = useLocalVideo();
+
   const { enableAudio, isAudioOn, stream: audioStream } = useLocalAudio();
+
+
+  const {
+    shareStream,
+    startScreenShare,
+    stopScreenShare,
+    audioTrack,
+    videoTrack,
+  } = useLocalScreenShare({
+    onProduceStart(producer) {
+      console.log("producer", producer);
+      console.log(videoTrack)
+    },
+    onProduceClose() { },
+    onProduceError() { },
+  });
+
+  const { sendData } = useDataMessage({
+    onMessage: (payload, from, label) => {
+      console.log("Received a message!");
+      console.log("Message: ", payload);
+      console.log("Sender: ", from);
+      if (label) console.log("Label: ", label);
+      // your code here
+    }
+  });
+
   const videoRef = useRef(null);
   useEffect(() => {
     if (stream && videoRef.current) {
@@ -122,6 +149,10 @@ const Game = () => {
   }, [stream]);
   console.log({ audioStream, isAudioOn });
   const { peerIds } = usePeerIds();
+  const load = usePeerIds({
+    labels: ["screen-share"]
+  });
+  console.log("Loads", load)
   console.log({ peerIds });
   console.log("inpeer", inpeer);
   const [myid] = useAtom(idAtom);
@@ -160,7 +191,20 @@ const Game = () => {
       }
     }
   };
+  const { peerIds: srpairid } = usePeerIds({
+    labels: ["screen-share-video"]
+  });
+  console.log("srpairid" ,srpairid)
 
+  function VideoMaterial({ url }) {
+    const texture = useVideoTexture(url)
+    return <meshBasicMaterial map={texture} toneMapped={false} />
+  }
+
+  function FallbackMaterial({ url }) {
+    const texture = useTexture(url)
+    return <meshBasicMaterial map={texture} toneMapped={false} />
+  }
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <SocketManager />
@@ -233,6 +277,16 @@ const Game = () => {
                 </button>
               )}
             </div>
+            <button
+              // Adding a unique key prop
+              onClick={async () => {
+                startScreenShare()
+              }}
+              className="btn w-[90%] mx-auto my-1 mt-2 hover:scale-[102%]"
+              style={{ padding: "5px" }}
+            >
+              Screen Share
+            </button>
           </div>
         )}
       </div>
