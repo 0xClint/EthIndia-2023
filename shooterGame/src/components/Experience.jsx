@@ -22,7 +22,11 @@ import {
   ContentPairProvider,
 } from "@waku/react";
 
-export const Experience = ({ downgradedPerformance = false, roomId }) => {
+export const Experience = ({
+  downgradedPerformance = false,
+  roomId,
+  setMenu,
+}) => {
   const [players, setPlayers] = useState([]);
   const [messageData, setMessageData] = useState([]);
 
@@ -44,7 +48,7 @@ export const Experience = ({ downgradedPerformance = false, roomId }) => {
   // Create a message structure
   const ChatMessage = new protobuf.Type("ChatMessage")
     .add(new protobuf.Field("timestamp", 1, "uint64"))
-    .add(new protobuf.Field("message", 2, "string"));
+    .add(new protobuf.Field("killer", 2, "uint64"));
 
   // *******************************************************
 
@@ -56,7 +60,11 @@ export const Experience = ({ downgradedPerformance = false, roomId }) => {
   const start = async () => {
     // Start the game
     console.log("roomID : " + roomId);
-    await insertCoin({ roomCode: roomId });
+    await insertCoin({ roomCode: roomId, skipLobby: true });
+
+    setTimeout(() => {
+      setMenu(true);
+    }, 120000);
 
     // Create a joystick controller for each joining player
     onPlayerJoin((state) => {
@@ -126,8 +134,7 @@ export const Experience = ({ downgradedPerformance = false, roomId }) => {
   const sendMessage = async () => {
     const tempMassage = ChatMessage.create({
       timestamp: Date.now(),
-      sender: "sender",
-      message: "message",
+      killer: myPlayer()?.id,
     });
     const serialisedMessage = ChatMessage.encode(tempMassage).finish();
     const timestamp = new Date();

@@ -11,7 +11,7 @@
 .icon-container img {
   border-radius: 10px;
   margin: 5px 5px;
-  background-color: rgba(198, 198, 198, 0.544);
+  /* background-color: rgba(198, 198, 198, 0.544); */
   height: 50px;
   width: auto;
   transform-origin: center;
@@ -44,9 +44,9 @@
   border: 1px solid white;
 }
 
-.icon-container img.active {
+/* .icon-container img.active {
   border: 3px solid rgb(144, 22, 22);
-}
+} */
 
 .menu {
   top: 0px;

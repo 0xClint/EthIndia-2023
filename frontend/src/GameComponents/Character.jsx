@@ -141,7 +141,7 @@ export function Character(props) {
   useFrame((state, delta) => {
     // console.log(rigidBody.current);
 
-    if (controls.current) {
+    if (myid == props.ide && controls.current) {
       const cameraDistanceY = window.innerWidth < 1024 ? 16 : 20;
       const cameraDistanceZ = window.innerWidth < 1024 ? 12 : 16;
       const playerWorldPos = vec3(rigidBody.current.translation());
@@ -155,7 +155,7 @@ export function Character(props) {
         playerWorldPos.y + 1.5,
         playerWorldPos.z,
         true
-      );  
+      );
       //   controls.current.setLookAt(
       //     playerWorldPos.x + 5,
       //     playerWorldPos.y + 4,
@@ -166,6 +166,7 @@ export function Character(props) {
       //     true
       //   );
     }
+
     if (
       currentAction.current == "running" ||
       currentAction.current == "walking"
@@ -206,8 +207,8 @@ export function Character(props) {
       //   ************************************************
 
       //rotate model
-      rotateQuaterion.setFromAxisAngle(rotateAngle, Math.PI);
-      scene.quaternion.rotateTowards(rotateQuaterion, 0.2);
+      // rotateQuaterion.setFromAxisAngle(rotateAngle, Math.PI);
+      // scene.quaternion.rotateTowards(rotateQuaterion, 0.2);
     }
 
     // if (jump) {

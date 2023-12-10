@@ -24,10 +24,9 @@ import { AccessToken, Role } from "@huddle01/server-sdk/auth";
 import RemotePeer from "./RemotePeer";
 import { ethers } from "ethers";
 import { checkAvatarFunc, createAvatarFunc } from "../utils/functionCall";
-import { useMoralis } from "react-moralis";
 import { ChatBox, Loader } from "../components";
 import { imgData } from "../utils/constants";
-import { ContentPairProvider } from "@waku/react";
+import { cameraIcon, chatIcon } from "../assets";
 
 const Game = () => {
   const [loader, setLoader] = useState(false);
@@ -37,6 +36,8 @@ const Game = () => {
   const [mycharacter] = useAtom(mycharactersAtom);
   const [mychar, setmyChar] = useState(mycharacter);
   const [token, setToken] = useState(null);
+  const [joinMenu, setJoinMenu] = useState(false);
+  const [chatMenu, setChatMenu] = useState(false);
 
   const crateToken = async () => {
     const accessToken = new AccessToken({
@@ -161,27 +162,27 @@ const Game = () => {
   };
 
   return (
-    <ContentPairProvider contentTopic={`/arcave/arcverse/chat`}>
-      <div style={{ width: "100vw", height: "100vh" }}>
-        <SocketManager />
-        <div>
-          <div
-            className="absolute  cursor-pointer z-10 left-1 icon-container gap-2"
-            style={{ width: "280px", height: "10px" }}
-          >
-            {peerIds.map((peerId) => (
-              <RemotePeer key={peerId} peerId={peerId} />
-            ))}
-            {isVideoOn && (
-              <div className="w-[80%] h-[135px] rounded-lg bg-black py-5 my-2">
-                <video
-                  ref={videoRef}
-                  style={{ width: "100%", height: "100%" }}
-                  autoPlay
-                ></video>
-              </div>
-            )}
-          </div>
+    <div style={{ width: "100vw", height: "100vh" }}>
+      <SocketManager />
+      <div>
+        <div
+          className="absolute  cursor-pointer z-10 left-1 icon-container gap-2"
+          style={{ width: "280px", height: "10px" }}
+        >
+          {peerIds.map((peerId) => (
+            <RemotePeer key={peerId} peerId={peerId} />
+          ))}
+          {isVideoOn && (
+            <div className="w-[80%] h-[135px] rounded-lg bg-black py-5 my-2">
+              <video
+                ref={videoRef}
+                style={{ width: "100%", height: "100%" }}
+                autoPlay
+              ></video>
+            </div>
+          )}
+        </div>
+        {joinMenu && (
           <div
             className="absolute bottom-[75px] cursor-pointer z-10 left-1 p-1 small-card-container gap-2"
             style={{ width: "200px", height: "160px" }}
@@ -233,95 +234,100 @@ const Game = () => {
               )}
             </div>
           </div>
-        </div>
-        {isNewPlayer && (
-          <div className="absolute w-[100vw] z-10 h-[100vh] make-flex">
-            <div className="w-[600px] h-[400px] py-5 card-container">
-              <h3 className="text-center font-medium text-[2rem]">
-                Mint your own Arborg
-              </h3>
-              <div className="avatar-container make-flex flex-wrap gap-3 my-5">
-                {imgData.map(({ id, cid }) => {
-                  return (
-                    <div
-                      key={id}
-                      onClick={() => setAvatarSelector(id)}
-                      className="w-[100px] h-[100px] rounded-md overflow-hidden"
-                      style={{
-                        border:
-                          id == avatarSelector ? "2px solid white" : "none",
-                      }}
-                    >
-                      <img
-                        src={`https://ipfs.io/ipfs/${cid}/p${id}.png`}
-                        className="h-[100%] cursor-pointer"
-                      />
-                    </div>
-                  );
-                })}
+        )}
+      </div>
+      {isNewPlayer && (
+        <div className="absolute w-[100vw] z-10 h-[100vh] make-flex">
+          <div className="w-[600px] h-[400px] py-5 card-container">
+            <h3 className="text-center font-medium text-[2rem]">
+              Mint your own Arborg
+            </h3>
+            <div className="avatar-container make-flex flex-wrap gap-3 my-5">
+              {imgData.map(({ id, cid }) => {
+                return (
+                  <div
+                    key={id}
+                    onClick={() => setAvatarSelector(id)}
+                    className="w-[100px] h-[100px] rounded-md overflow-hidden"
+                    style={{
+                      border: id == avatarSelector ? "2px solid white" : "none",
+                    }}
+                  >
+                    <img
+                      src={`https://ipfs.io/ipfs/${cid}/p${id}.png`}
+                      className="h-[100%] cursor-pointer"
+                    />
+                  </div>
+                );
+              })}
 
-                <div className="min-w-[100px] min-h-[100px] border-2 border-white rounded-lg text-white text-[3rem] make-flex">
-                  +
-                </div>
-              </div>
-              <div className="make-flex">
-                <button
-                  className="btn w-60 text-[1.5rem]"
-                  onClick={() => createAvatar()}
-                >
-                  Mint
-                </button>
+              <div className="min-w-[100px] min-h-[100px] border-2 border-white rounded-lg text-white text-[3rem] make-flex">
+                +
               </div>
             </div>
+            <div className="make-flex">
+              <button
+                className="btn w-60 text-[1.5rem]"
+                onClick={() => createAvatar()}
+              >
+                Mint
+              </button>
+            </div>
           </div>
-        )}
-        <div className="absolute bottom-2 cursor-pointer z-10 left-2 icon-container">
-          <img
-            src={"#"}
-            onClick={async () => await createRoom()}
-            style={{
-              backgroundColor: "rgba(198, 198, 198, 0.544)",
-              padding: "13px",
-            }}
-          />
         </div>
-        <div className="absolute bottom-2 cursor-pointer z-10 right-2 icon-container">
-          <img
-            src={"#"}
-            style={{
-              backgroundColor: "rgba(198, 198, 198, 0.544)",
-              padding: "13px",
-            }}
-          />
-        </div>
-
-        <Canvas shadows camera={{ position: [0, 6, 14], fov: 42 }}>
-          <OrbitControls />
-          <axesHelper />
-          <gridHelper />
-          <color attach="background" args={["#dbecfb"]} />
-          {/* <fog attach="fog" args={["#dbecfb", 30, 40]} /> */}
-          <directionalLight
-            intensity={1}
-            shadow-bias={-0.0004}
-            position={[-20, 20, 20]}
-          >
-            <orthographicCamera
-              attach="shadow-camera"
-              args={[-20, 20, 20, -20]}
-            />
-          </directionalLight>
-          <ambientLight intensity={0.2} />
-          <Suspense>
-            <Physics debug gravity={[0, -50, 0]}>
-              <Experience />
-            </Physics>
-          </Suspense>
-        </Canvas>
-        {loader && <Loader />}
-        <ChatBox />
+      )}
+      <div
+        className="absolute bottom-2 cursor-pointer z-10 left-2 icon-container"
+        onClick={() => setJoinMenu(!joinMenu)}
+      >
+        <img
+          src={cameraIcon}
+          onClick={async () => await createRoom()}
+          style={{
+            backgroundColor: "rgba(198, 198, 198, 0.544)",
+            padding: "13px",
+          }}
+        />
       </div>
-    </ContentPairProvider>
+      <div
+        className="absolute bottom-2 cursor-pointer z-10 right-2 icon-container"
+        onClick={() => setChatMenu(!chatMenu)}
+      >
+        <img
+          src={chatIcon}
+          style={{
+            backgroundColor: "rgba(198, 198, 198, 0.544)",
+            padding: "13px",
+          }}
+        />
+      </div>
+
+      <Canvas shadows camera={{ position: [0, 6, 14], fov: 42 }}>
+        <OrbitControls />
+        <axesHelper />
+        <gridHelper />
+        <color attach="background" args={["#dbecfb"]} />
+        {/* <fog attach="fog" args={["#dbecfb", 30, 40]} /> */}
+        <directionalLight
+          intensity={1}
+          shadow-bias={-0.0004}
+          position={[-20, 20, 20]}
+        >
+          <orthographicCamera
+            attach="shadow-camera"
+            args={[-20, 20, 20, -20]}
+          />
+        </directionalLight>
+        <ambientLight intensity={0.2} />
+        <Suspense>
+          <Physics debug gravity={[0, -50, 0]}>
+            <Experience />
+          </Physics>
+        </Suspense>
+      </Canvas>
+      {loader && <Loader />}
+      {chatMenu && <ChatBox />}
+    </div>
   );
 };
 
