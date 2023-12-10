@@ -320,7 +320,7 @@ const Game = () => {
         </directionalLight>
         <ambientLight intensity={0.2} />
         <Suspense>
-          <Physics debug gravity={[0, -50, 0]}>
+          <Physics>
             <Experience />
           </Physics>
         </Suspense>
