@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, useVideoTexture, useTexture } from "@react-three/drei";
 import React, { Suspense, useState } from "react";
 import { Physics } from "@react-three/rapier";
 import "./Game.css";
@@ -12,10 +12,20 @@ import {
 } from "../GameComponents/SocketManager";
 import { Experience } from "../GameComponents/Experience";
 import { charactersAtom } from "../GameComponents/SocketManager";
-import { useRoom, useLocalVideo, usePeerIds, useLocalPeer, useLocalScreenShare, useLocalAudio, useDataMessage } from '@huddle01/react/hooks';
-import axios from "axios"
-import { useEffect, useRef } from 'react';
-import { AccessToken, Role } from '@huddle01/server-sdk/auth';
+import {
+  useRoom,
+  useLocalVideo,
+  usePeerIds,
+  useLocalPeer,
+  useLocalScreenShare,
+  useLocalAudio,
+  useDataMessage,
+} from "@huddle01/react/hooks";
+import axios from "axios";
+import { useEffect, useRef } from "react";
+import { AccessToken, Role } from "@huddle01/server-sdk/auth";
+import url from "../assets/video.mp4";
+import fallbackURL from "../assets/bg.jpg";
 
 import RemotePeer from "./RemotePeer";
 import { ethers } from "ethers";
@@ -97,7 +107,7 @@ const Game = () => {
     }
   };
 
-  const { joinRoom, } = useRoom({
+  const { joinRoom } = useRoom({
     onJoin: async (room) => {
       console.log("Joined the room", room);
       await enableVideo();
@@ -106,15 +116,11 @@ const Game = () => {
     onPeerJoin: (peer) => {
       console.log("onPeerJoin", peer);
     },
-
-
-
   });
 
   const { enableVideo, isVideoOn, stream, disableVideo } = useLocalVideo();
 
   const { enableAudio, isAudioOn, stream: audioStream } = useLocalAudio();
-
 
   const {
     shareStream,
@@ -125,10 +131,10 @@ const Game = () => {
   } = useLocalScreenShare({
     onProduceStart(producer) {
       console.log("producer", producer);
-      console.log(videoTrack)
+      console.log(videoTrack);
     },
-    onProduceClose() { },
-    onProduceError() { },
+    onProduceClose() {},
+    onProduceError() {},
   });
 
   const { sendData } = useDataMessage({
@@ -138,7 +144,7 @@ const Game = () => {
       console.log("Sender: ", from);
       if (label) console.log("Label: ", label);
       // your code here
-    }
+    },
   });
 
   const videoRef = useRef(null);
@@ -150,9 +156,9 @@ const Game = () => {
   console.log({ audioStream, isAudioOn });
   const { peerIds } = usePeerIds();
   const load = usePeerIds({
-    labels: ["screen-share"]
+    labels: ["screen-share"],
   });
-  console.log("Loads", load)
+  console.log("Loads", load);
   console.log({ peerIds });
   console.log("inpeer", inpeer);
   const [myid] = useAtom(idAtom);
@@ -177,6 +183,7 @@ const Game = () => {
 
   const createAvatar = async () => {
     const cid = imgData.filter((item) => item.id == avatarSelector);
+    console.log(cid.cid);
 
     if (avatarSelector) {
       setLoader(true);
@@ -184,7 +191,10 @@ const Game = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         const signer = await provider.getSigner();
-        await createAvatarFunc(signer, cid);
+        await createAvatarFunc(
+          signer,
+          "bafybeiffvlpck5o3fx2l2zj46jct6kcnglwqi7ewnnbod2p7oyps5rjm3y"
+        );
         setLoader(false);
       } catch (error) {
         console.log(error);
@@ -192,18 +202,18 @@ const Game = () => {
     }
   };
   const { peerIds: srpairid } = usePeerIds({
-    labels: ["screen-share-video"]
+    labels: ["screen-share-video"],
   });
-  console.log("srpairid" ,srpairid)
+  console.log("srpairid", srpairid);
 
   function VideoMaterial({ url }) {
-    const texture = useVideoTexture(url)
-    return <meshBasicMaterial map={texture} toneMapped={false} />
+    const texture = useVideoTexture(url);
+    return <meshBasicMaterial map={texture} toneMapped={false} />;
   }
 
   function FallbackMaterial({ url }) {
-    const texture = useTexture(url)
-    return <meshBasicMaterial map={texture} toneMapped={false} />
+    const texture = useTexture(url);
+    return <meshBasicMaterial map={texture} toneMapped={false} />;
   }
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
@@ -217,12 +227,14 @@ const Game = () => {
             <RemotePeer key={peerId} peerId={peerId} />
           ))}
           {isVideoOn && (
-            <div className="w-[80%] h-[135px] rounded-lg bg-black py-5 my-2">
-              <video
-                ref={videoRef}
-                style={{ width: "100%", height: "100%" }}
-                autoPlay
-              ></video>
+            <div className="w-[80%] h-[135px] rounded-lg bg-black my-2 overflow-hidden">
+              <button
+                onClick={async () => await disableVideo()}
+                className="text-white absolute translate-x-[205px] z-10"
+              >
+                X
+              </button>
+              <video ref={videoRef} style={{ height: "100%" }} autoPlay></video>
             </div>
           )}
         </div>
@@ -280,7 +292,7 @@ const Game = () => {
             <button
               // Adding a unique key prop
               onClick={async () => {
-                startScreenShare()
+                startScreenShare();
               }}
               className="btn w-[90%] mx-auto my-1 mt-2 hover:scale-[102%]"
               style={{ padding: "5px" }}
@@ -359,6 +371,19 @@ const Game = () => {
       <Canvas shadows camera={{ position: [0, 6, 14], fov: 42 }}>
         <OrbitControls />
         <axesHelper />
+        <mesh position={[12, 50, -75]} rotation={[0, 0, 0]}>
+          <planeGeometry args={[20, 20]} />
+          <Suspense fallback={<FallbackMaterial url={fallbackURL} />}>
+            <VideoMaterial url={url} />
+          </Suspense>
+        </mesh>
+        <mesh position={[30, 2.8, -85]} rotation={[0, 1.6, 0]}>
+          <planeGeometry args={[15, 5]} />
+          <Suspense fallback={<FallbackMaterial url={fallbackURL} />}>
+            <VideoMaterial url={url} />
+          </Suspense>
+                  
+        </mesh>
         <gridHelper />
         <color attach="background" args={["#dbecfb"]} />
         {/* <fog attach="fog" args={["#dbecfb", 30, 40]} /> */}

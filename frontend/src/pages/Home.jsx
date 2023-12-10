@@ -54,7 +54,7 @@ const Home = () => {
                 <h2 className="text-[1.3rem] font-bold text-white">Arverse</h2>
               </button>
               <a
-                href="#"
+                href="https://eth-india-2023-4yz3.vercel.app/"
                 className="make-flex  flex-col card-container gap-6 w-[280px] h-[280px] hover:scale-[103%] text-base"
               >
                 <div className="w-[200px] h-[170px] overflow-hidden rounded-lg make-flex shadow-lg">
@@ -74,7 +74,7 @@ const Home = () => {
         )
       ) : (
         <div className="make-flex justify-start pt-28 w-screen h-screen flex-col">
-          <h1 className="text-[3rem] font-bold">Arcave</h1>
+          {/* <h1 className="text-[3rem] font-bold">Arcave</h1> */}
           <div className="w-screen mx-auto h-[300px] make-flex gap-14">
             <div className="make-flex flex-col card-container gap-2 w-[450px] h-[280px] hover:scale-102 text-base">
               <h2 className="mb-10 text-[2rem]">Welcome Arcborg</h2>
