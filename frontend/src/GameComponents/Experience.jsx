@@ -5,7 +5,7 @@ import { Character, Map } from "./index";
 
 export const Experience = () => {
   const [characters] = useAtom(charactersAtom);
-  console.log(characters);
+  // console.log(characters);
   return (
     <>
       <Map />

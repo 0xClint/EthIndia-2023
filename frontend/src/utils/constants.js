@@ -776,3 +776,15 @@ export const AVATAR_NFT_CONTRACT_ABI = [
     "type": "function"
   }
 ]
+
+export const imgData = [
+  { id: 1, cid: "bafybeih3zwnrjpwuvj7s3cmsvux333syoyuefoecvmlzw3azcz43jycct4" },
+  { id: 2, cid: "bafybeifjhtvestgv2wlgm4kgv7rnf6mi3eyk33suiuqti7bjoiiynzvxpq" },
+  { id: 3, cid: "bafybeiffvlpck5o3fx2l2zj46jct6kcnglwqi7ewnnbod2p7oyps5rjm3y" },
+  { id: 4, cid: "bafybeifmgh6wvaqmlpxnubvq3tb2d3qtp42m2dqqdx3amtoexgub7pkzie" },
+  { id: 5, cid: "bafybeiciruv6w2wrmo5pie2mwfresdeoekkxyhaj2hvv5m45kd2buykcom" },
+  { id: 6, cid: "bafybeiftqchukowteaf3mnwnnhgajnnbto37vzurc2dorbn7sgfxaucv6i" },
+  { id: 7, cid: "bafybeidu5jxhfr3s4znqyyov56nwkk7oncnhmfytyo7ysnzx2geqyofqva" },
+  { id: 8, cid: "bafybeiaupfvwzbiau323cuprfddjebem3zlsoxhnhmisyt5s5vryperu64" },
+  { id: 9, cid: "bafybeig3iefin7zpiqfsujhrv44acqhiuoxhzgyyizpikiswgn46spmngm" },
+]
