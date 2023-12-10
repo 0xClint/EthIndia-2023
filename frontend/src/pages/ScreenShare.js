@@ -1,16 +1,24 @@
-import { useRemoteVideo, useRemoteAudio, usePeerIds } from '@huddle01/react/hooks';
+import { useRemoteVideo, useRemoteAudio, usePeerIds,useRemoteScreenShare } from '@huddle01/react/hooks';
 import React, { useEffect, useRef } from 'react';
 
-const RemotePeer = (props) => {
+const ScreenShare = (props) => {
     console.log("RemotePeer Page", props.peerId)
-    const { stream, state } = useRemoteVideo({ peerId: props.peerId });
-    const { stream: audioStream } = useRemoteAudio({ peerId: props.peerId });
+    const { peerIds } = usePeerIds({
+        labels: ["screen-share-video"]
+    });
+    console.log(peerIds)
     const vidRef = useRef(null);
     const audioRef = useRef(null);
-   
+    const { videoStream, videoTrack, audioTrack  , audioStream , state } = useRemoteScreenShare({
+        peerId: peerIds[0],
+        onPlayable({ audioTrack, stream, label }) { },
+        onClose() { },
+    });
+
+
     useEffect(() => {
-        if (stream && vidRef.current && state === "playable") {
-            vidRef.current.srcObject = stream;
+        if (videoStream && vidRef.current && state === "playable") {
+            vidRef.current.srcObject = videoStream;
 
             vidRef.current.onloadedmetadata = async () => {
                 try {
@@ -25,7 +33,7 @@ const RemotePeer = (props) => {
                 console.error("videoCard() | Error is hapenning...");
             };
         }
-    }, [stream, state]);
+    }, [videoStream, state]);
 
 
     useEffect(() => {
@@ -67,4 +75,4 @@ const RemotePeer = (props) => {
     );
 };
 
-export default React.memo(RemotePeer);
+export default React.memo(ScreenShare);

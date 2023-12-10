@@ -12,7 +12,7 @@ import {
 } from "../GameComponents/SocketManager";
 import { Experience } from "../GameComponents/Experience";
 import { charactersAtom } from "../GameComponents/SocketManager";
-import { useRoom, useLocalVideo, usePeerIds, useLocalPeer, useLocalAudio, useDataMessage } from '@huddle01/react/hooks';
+import { useRoom, useLocalVideo, usePeerIds, useLocalPeer, useLocalScreenShare, useLocalAudio, useDataMessage } from '@huddle01/react/hooks';
 import axios from "axios"
 import { useEffect, useRef } from 'react';
 import { AccessToken, Role } from '@huddle01/server-sdk/auth';
@@ -28,6 +28,7 @@ import fallbackURL from "../assets/bg.jpg";
 import { ChatBox, Loader } from "../components";
 import { imgData } from "../utils/constants";
 import { ContentPairProvider } from "@waku/react";
+import ScreenShare from "./ScreenShare";
 
 const Game = () => {
   const [loader, setLoader] = useState(false);
@@ -115,8 +116,24 @@ const Game = () => {
   });
 
   const { enableVideo, isVideoOn, stream, disableVideo } = useLocalVideo();
+
   const { enableAudio, isAudioOn, stream: audioStream } = useLocalAudio();
- 
+
+
+  const {
+    shareStream,
+    startScreenShare,
+    stopScreenShare,
+    audioTrack,
+    videoTrack,
+  } = useLocalScreenShare({
+    onProduceStart(producer) {
+      console.log("producer", producer);
+      console.log(videoTrack)
+    },
+    onProduceClose() { },
+    onProduceError() { },
+  });
 
   const { sendData } = useDataMessage({
     onMessage: (payload, from, label) => {
@@ -136,6 +153,10 @@ const Game = () => {
   }, [stream]);
   console.log({ audioStream, isAudioOn });
   const { peerIds } = usePeerIds();
+  const load = usePeerIds({
+    labels: ["screen-share"]
+  });
+  console.log("Loads", load)
   console.log({ peerIds });
   console.log("inpeer", inpeer);
   const [myid] = useAtom(idAtom);
@@ -174,6 +195,10 @@ const Game = () => {
       }
     }
   };
+  const { peerIds: srpairid } = usePeerIds({
+    labels: ["screen-share-video"]
+  });
+  console.log("srpairid" ,srpairid)
 
   function VideoMaterial({ url }) {
     const texture = useVideoTexture(url)
@@ -196,6 +221,13 @@ const Game = () => {
             {peerIds.map((peerId) => (
               <RemotePeer key={peerId} peerId={peerId} />
             ))}
+            {
+              srpairid.length != 0 ? (
+                <ScreenShare />
+              ) : (null)
+            }
+
+
             {isVideoOn && (
               <div className="w-[80%] h-[135px] rounded-lg bg-black py-5 my-2">
                 <video
@@ -256,6 +288,16 @@ const Game = () => {
                 </button>
               )}
             </div>
+            <button
+              // Adding a unique key prop
+              onClick={async () => {
+                startScreenShare()
+              }}
+              className="btn w-[90%] mx-auto my-1 mt-2 hover:scale-[102%]"
+              style={{ padding: "5px" }}
+            >
+              Screen Share
+            </button>
           </div>
         </div>
         {isNewPlayer && (
@@ -292,7 +334,7 @@ const Game = () => {
                     </Suspense>
                   </mesh>
                   <mesh position={[30, 2.8, -85]} rotation={[0, 1.6, 0]}>
-                    <planeGeometry args={[15, 5]} />
+                    <planeGeometry args={[50, 50]} />
                     <Suspense fallback={<FallbackMaterial url={fallbackURL} />}>
                       <VideoMaterial url={url} />
                     </Suspense>
